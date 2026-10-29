@@ -1,0 +1,6 @@
+{
+  "name": "SEI - Diagnóstico de Aprendizagem",
+  "description": "Plataforma SEI: descubra seu perfil de aprendizagem através dos 3 pilares — Sensorial (S), Experiencial (E) e Inteligências Múltiplas (I). Relatórios completos e plano de estudo em Português do Brasil.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
