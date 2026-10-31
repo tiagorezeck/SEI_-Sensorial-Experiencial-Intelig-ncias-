@@ -9,7 +9,7 @@ import { Eye, Compass, Sparkles, Layers, ArrowRight } from 'lucide-react';
 import { ModelType } from '../data/quizData';
 
 interface ReportTabsProps {
-  currentModel: ModelType;
+  currentModel: ModelType | 'comparison';
   onSwitchModel: (model: ModelType) => void;
   onViewComparison: () => void;
   hasAllThree?: boolean;
@@ -72,7 +72,11 @@ export default function ReportTabs({
 
           <button
             onClick={onViewComparison}
-            className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-black bg-slate-900 text-white hover:bg-slate-800 transition-colors shadow-xs"
+            className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-black transition-all shadow-xs ${
+              currentModel === 'comparison'
+                ? 'bg-slate-900 text-white ring-2 ring-indigo-500 ring-offset-1'
+                : 'bg-slate-900 text-white hover:bg-slate-800'
+            }`}
           >
             <span>{locale === 'pt' ? 'Matriz SEI 360°' : 'SEI 360° Matrix'}</span>
             <ArrowRight className="w-3 h-3" />

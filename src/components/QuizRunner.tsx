@@ -58,6 +58,25 @@ export default function QuizRunner<T extends VarkModality | KolbDimension>({
   const answeredCount = answers.filter((a) => a !== null).length;
   const allAnswered = answeredCount === questions.length;
 
+  // Shuffled options for the current question to prevent pattern guessing
+  const shuffledOptions = React.useMemo(() => {
+    if (!currentQuestion) return [];
+    const opts = [...currentQuestion.options];
+    let seed = 0;
+    for (let i = 0; i < currentQuestion.id.length; i++) {
+      seed = (seed << 5) - seed + currentQuestion.id.charCodeAt(i);
+      seed |= 0;
+    }
+    for (let i = opts.length - 1; i > 0; i--) {
+      seed = (seed * 9301 + 49297) % 233280;
+      const j = Math.floor((seed / 233280) * (i + 1));
+      const temp = opts[i];
+      opts[i] = opts[j];
+      opts[j] = temp;
+    }
+    return opts;
+  }, [currentQuestion.id]);
+
   // Auto-save progress
   useEffect(() => {
     saveQuizProgress(modelKey, currentIndex, answers);
@@ -69,8 +88,8 @@ export default function QuizRunner<T extends VarkModality | KolbDimension>({
       // Numbers 1-4
       if (['1', '2', '3', '4'].includes(e.key)) {
         const optIndex = parseInt(e.key) - 1;
-        if (currentQuestion.options[optIndex]) {
-          handleSelectOption(currentQuestion.options[optIndex].tag);
+        if (shuffledOptions[optIndex]) {
+          handleSelectOption(shuffledOptions[optIndex].tag);
         }
       } else if (e.key === 'ArrowRight' || e.key === 'Enter') {
         if (currentAnswer !== null) {
@@ -83,7 +102,7 @@ export default function QuizRunner<T extends VarkModality | KolbDimension>({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentIndex, currentAnswer, currentQuestion, answers]);
+  }, [currentIndex, currentAnswer, currentQuestion, answers, shuffledOptions]);
 
   const handleSelectOption = (tag: T) => {
     const nextAnswers = [...answers];
@@ -117,7 +136,7 @@ export default function QuizRunner<T extends VarkModality | KolbDimension>({
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
       {/* Top Header bar with exit & reset */}
       <div className="flex items-center justify-between mb-6">
         <button
@@ -171,7 +190,7 @@ export default function QuizRunner<T extends VarkModality | KolbDimension>({
 
         {/* Options List */}
         <div className="space-y-3.5">
-          {currentQuestion.options.map((option, idx) => {
+          {shuffledOptions.map((option, idx) => {
             const isSelected = currentAnswer === option.tag;
             const letter = ['A', 'B', 'C', 'D'][idx];
 
@@ -179,25 +198,25 @@ export default function QuizRunner<T extends VarkModality | KolbDimension>({
               <button
                 key={option.id || idx}
                 onClick={() => handleSelectOption(option.tag)}
-                className={`w-full text-left p-4 sm:p-5 rounded-2xl border-2 transition-all duration-200 flex items-start gap-4 focus:outline-hidden group ${
+                className={`w-full text-left p-4 sm:p-5 rounded-2xl border-2 transition-all duration-200 flex items-center justify-between focus:outline-hidden group ${
                   isSelected
                     ? 'border-indigo-600 bg-indigo-50/70 shadow-sm ring-2 ring-indigo-500/20'
                     : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/60'
                 }`}
               >
-                {/* Radio badge */}
-                <div
-                  className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 font-bold text-xs transition-colors ${
-                    isSelected
-                      ? 'bg-indigo-600 text-white shadow-sm'
-                      : 'bg-slate-100 text-slate-600 group-hover:bg-slate-200'
-                  }`}
-                >
-                  {isSelected ? <CheckCircle2 className="w-4 h-4" /> : letter}
-                </div>
+                <div className="flex items-center gap-4 flex-1 pr-2">
+                  {/* Radio badge */}
+                  <div
+                    className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 font-bold text-xs transition-colors ${
+                      isSelected
+                        ? 'bg-indigo-600 text-white shadow-sm'
+                        : 'bg-slate-100 text-slate-600 group-hover:bg-slate-200'
+                    }`}
+                  >
+                    {isSelected ? <CheckCircle2 className="w-4 h-4" /> : letter}
+                  </div>
 
-                {/* Option text */}
-                <div className="flex-1">
+                  {/* Option text */}
                   <span
                     className={`text-sm sm:text-base leading-relaxed ${
                       isSelected ? 'font-bold text-indigo-950' : 'text-slate-700'
@@ -207,10 +226,9 @@ export default function QuizRunner<T extends VarkModality | KolbDimension>({
                   </span>
                 </div>
 
-                {/* Keyboard shortcut hint */}
-                <span className="hidden sm:inline-block text-[11px] font-mono text-slate-400 opacity-60">
-                  [{idx + 1}]
-                </span>
+                {isSelected && (
+                  <CheckCircle2 className="w-5 h-5 text-indigo-600 shrink-0" />
+                )}
               </button>
             );
           })}

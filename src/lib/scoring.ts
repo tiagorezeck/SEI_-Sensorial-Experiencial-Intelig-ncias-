@@ -7,6 +7,7 @@ import {
   VarkModality,
   KolbDimension,
   GardnerIntelligence,
+  GardnerQuestion,
   varkResults,
   kolbResults,
   gardnerResults,
@@ -118,25 +119,60 @@ export function getKolbResultProfile(resultKey: string): ResultProfile {
 export type GardnerScores = Record<GardnerIntelligence, number>;
 
 export function calculateGardnerScores(
-  answers: (number | null)[],
-  intelligences: GardnerIntelligence[]
+  answers: (number | string | null)[],
+  questionsOrTags?: GardnerQuestion[] | GardnerIntelligence[]
 ): GardnerScores {
-  const sums: GardnerScores = { LOG: 0, LIN: 0, SPA: 0, MUS: 0, KIN: 0, INTER: 0, INTRA: 0 };
-  const counts: GardnerScores = { LOG: 0, LIN: 0, SPA: 0, MUS: 0, KIN: 0, INTER: 0, INTRA: 0 };
+  const likertSums: GardnerScores = { LOG: 0, LIN: 0, SPA: 0, MUS: 0, KIN: 0, INTER: 0, INTRA: 0 };
+  const likertCounts: GardnerScores = { LOG: 0, LIN: 0, SPA: 0, MUS: 0, KIN: 0, INTER: 0, INTRA: 0 };
+  const situationalBonuses: GardnerScores = { LOG: 0, LIN: 0, SPA: 0, MUS: 0, KIN: 0, INTER: 0, INTRA: 0 };
 
-  answers.forEach((ans, idx) => {
-    if (ans !== null && intelligences[idx]) {
-      const tag = intelligences[idx];
-      sums[tag] += ans;
-      counts[tag]++;
-    }
+  const isQuestionArray = Array.isArray(questionsOrTags) && questionsOrTags.length > 0 && typeof questionsOrTags[0] === 'object';
+
+  if (isQuestionArray) {
+    const questions = questionsOrTags as GardnerQuestion[];
+    questions.forEach((q, idx) => {
+      const ans = answers[idx];
+      if (ans === null || ans === undefined) return;
+
+      if (!('options' in q)) {
+        // Likert question
+        const numVal = typeof ans === 'number' ? ans : parseInt(String(ans), 10);
+        if (!isNaN(numVal) && numVal >= 1 && numVal <= 5) {
+          const adjustedVal = q.isReversed ? (6 - numVal) : numVal;
+          likertSums[q.tag] += adjustedVal;
+          likertCounts[q.tag] += 1;
+        }
+      } else {
+        // Situational question
+        const selectedOpt = q.options.find((opt) => opt.id === ans || opt.tag === ans);
+        if (selectedOpt) {
+          situationalBonuses[selectedOpt.tag] += 0.4;
+        }
+      }
+    });
+  } else if (Array.isArray(questionsOrTags)) {
+    // Fallback: array of tags
+    const tags = questionsOrTags as GardnerIntelligence[];
+    answers.forEach((ans, idx) => {
+      const numVal = typeof ans === 'number' ? ans : parseInt(String(ans), 10);
+      if (!isNaN(numVal) && tags[idx]) {
+        const tag = tags[idx];
+        likertSums[tag] += numVal;
+        likertCounts[tag] += 1;
+      }
+    });
+  }
+
+  const finalScores: GardnerScores = { LOG: 0, LIN: 0, SPA: 0, MUS: 0, KIN: 0, INTER: 0, INTRA: 0 };
+
+  (Object.keys(finalScores) as GardnerIntelligence[]).forEach((key) => {
+    const baseAvg = likertCounts[key] > 0 ? likertSums[key] / likertCounts[key] : 3.0;
+    const bonus = situationalBonuses[key] || 0;
+    const total = Math.min(5.0, Math.max(1.0, baseAvg + bonus));
+    finalScores[key] = Number(total.toFixed(2));
   });
 
-  const averages: GardnerScores = { LOG: 0, LIN: 0, SPA: 0, MUS: 0, KIN: 0, INTER: 0, INTRA: 0 };
-  for (const key of Object.keys(averages) as GardnerIntelligence[]) {
-    averages[key] = counts[key] > 0 ? Number((sums[key] / counts[key]).toFixed(2)) : 0;
-  }
-  return averages;
+  return finalScores;
 }
 
 export function determineGardnerResult(scores: GardnerScores): GardnerIntelligence[] {

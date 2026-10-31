@@ -191,7 +191,7 @@ export default function ModelGuideView({ initialModel = 'vark', onStartQuiz }: M
   const guide = guidesMap[activeTab];
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 animate-in fade-in duration-300">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 animate-in fade-in duration-300">
       {/* Title */}
       <div className="text-center max-w-2xl mx-auto mb-10">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black bg-indigo-50 border border-indigo-200/70 text-indigo-700 mb-3">

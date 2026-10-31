@@ -11,6 +11,7 @@ import ModelCard from './components/ModelCard';
 import ModelIntro from './components/ModelIntro';
 import QuizRunner from './components/QuizRunner';
 import LikertQuizRunner from './components/LikertQuizRunner';
+import UnifiedQuizRunner from './components/UnifiedQuizRunner';
 import VarkResultView from './components/VarkResultView';
 import KolbResultView from './components/KolbResultView';
 import GardnerResultView from './components/GardnerResultView';
@@ -140,9 +141,8 @@ function MainApp() {
     navigateTo('result:kolb');
   };
 
-  const handleGardnerComplete = (answers: (number | null)[]) => {
-    const intelligences = gardnerQuestions.map((q) => q.tag);
-    const scores = calculateGardnerScores(answers, intelligences);
+  const handleGardnerComplete = (answers: (number | string | null)[]) => {
+    const scores = calculateGardnerScores(answers, gardnerQuestions);
     const resultTypes = determineGardnerResult(scores);
     const primaryProfile = getGardnerResultProfile(resultTypes[0]);
     const title = localize(primaryProfile.title, locale);
@@ -252,7 +252,7 @@ function MainApp() {
         {currentView === 'home' && (
           <div className="space-y-16 py-10 sm:py-16">
             {/* Hero Section */}
-            <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-black bg-indigo-50 border border-indigo-200/80 text-indigo-700 shadow-xs mb-6">
                 <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
                 <span>{t('home.badge')}</span>
@@ -268,19 +268,26 @@ function MainApp() {
 
               <div className="flex flex-wrap items-center justify-center gap-3">
                 <button
-                  onClick={() => navigateTo('intro:vark')}
-                  className="flex items-center gap-2 px-6 py-3.5 rounded-2xl font-black text-sm text-white bg-gradient-to-r from-indigo-600 via-blue-600 to-indigo-700 hover:from-indigo-700 hover:to-blue-800 shadow-lg shadow-indigo-200 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  onClick={() => navigateTo('quiz:unified')}
+                  className="flex items-center gap-2 px-6 py-3.5 rounded-2xl font-black text-sm text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:to-pink-700 shadow-lg shadow-purple-200 transition-all hover:scale-[1.02] active:scale-[0.98]"
                 >
                   <Sparkles className="w-4 h-4" />
-                  <span>{locale === 'pt' ? 'Iniciar Pilar S: Sensorial (~3 min)' : 'Start Pillar S: Sensory (~3 min)'}</span>
+                  <span>{locale === 'pt' ? 'Iniciar Diagnóstico Unificado SEI 360° (75 Qs)' : 'Start SEI 360° Unified Quiz (75 Qs)'}</span>
+                </button>
+
+                <button
+                  onClick={() => navigateTo('intro:vark')}
+                  className="flex items-center gap-2 px-5 py-3.5 rounded-2xl font-bold text-sm text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 shadow-xs transition-colors"
+                >
+                  <span>{locale === 'pt' ? 'Testes Individuais' : 'Individual Quizzes'}</span>
                 </button>
 
                 <button
                   onClick={() => navigateTo('comparison')}
-                  className="flex items-center gap-2 px-6 py-3.5 rounded-2xl font-bold text-sm text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 shadow-xs transition-colors"
+                  className="flex items-center gap-2 px-5 py-3.5 rounded-2xl font-bold text-sm text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 shadow-xs transition-colors"
                 >
                   <BarChart2 className="w-4 h-4 text-slate-500" />
-                  <span>{locale === 'pt' ? 'Ver Matriz Integrada SEI (360°)' : 'View SEI Integrated Matrix'}</span>
+                  <span>{locale === 'pt' ? 'Matriz SEI (360°)' : 'SEI Matrix (360°)'}</span>
                 </button>
               </div>
 
@@ -399,7 +406,7 @@ function MainApp() {
             </section>
 
             {/* Which test first recommendation */}
-            <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-md flex flex-col md:flex-row items-center justify-between gap-6">
                 <div className="space-y-2 text-center md:text-left">
                   <span className="text-xs font-bold text-indigo-600 uppercase tracking-wider block">
@@ -474,6 +481,15 @@ function MainApp() {
             onExit={() => navigateTo('home')}
           />
         )}
+        {currentView === 'quiz:unified' && (
+          <UnifiedQuizRunner
+            onComplete={() => {
+              setSavedResults(getSavedResults());
+              navigateTo('comparison');
+            }}
+            onExit={() => navigateTo('home')}
+          />
+        )}
 
         {/* RESULTS VIEWS */}
         {currentView === 'result:vark' && (
@@ -506,7 +522,15 @@ function MainApp() {
 
         {/* COMPARISON VIEW */}
         {currentView === 'comparison' && (
-          <ComparisonView onSelectModel={(m) => navigateTo(`intro:${m}`)} />
+          <ComparisonView
+            onSelectModel={(m) => {
+              if (m === 'unified') {
+                navigateTo('quiz:unified');
+              } else {
+                navigateTo(`intro:${m}`);
+              }
+            }}
+          />
         )}
 
         {/* GUIDES VIEW */}

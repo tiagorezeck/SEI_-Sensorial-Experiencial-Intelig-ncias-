@@ -38,7 +38,7 @@ export default function HistoryView({
   const { locale, t } = useLocale();
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 animate-in fade-in duration-300">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 animate-in fade-in duration-300">
       {/* Back button */}
       <button
         onClick={onBack}

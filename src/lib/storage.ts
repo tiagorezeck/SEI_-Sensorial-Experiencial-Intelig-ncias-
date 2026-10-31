@@ -60,7 +60,7 @@ export function getSavedResultForModel(model: 'vark' | 'kolb' | 'gardner'): Save
 export function saveQuizProgress(
   model: string,
   currentIndex: number,
-  answers: (VarkModality | KolbDimension | number | null)[]
+  answers: (VarkModality | KolbDimension | number | string | null)[]
 ): void {
   try {
     localStorage.setItem(

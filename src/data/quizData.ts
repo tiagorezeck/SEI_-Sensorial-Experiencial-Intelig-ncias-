@@ -42,7 +42,23 @@ export interface LikertQuestion {
   id: string;
   tag: GardnerIntelligence;
   prompt: LocalizedString;
+  isReversed?: boolean;
 }
+
+export interface GardnerSituationalOption {
+  id: string;
+  tag: GardnerIntelligence;
+  text: LocalizedString;
+}
+
+export interface GardnerSituationalQuestion {
+  id: string;
+  prompt: LocalizedString;
+  options: GardnerSituationalOption[];
+}
+
+export type GardnerQuestion = LikertQuestion | GardnerSituationalQuestion;
+
 
 export interface ResultProfile {
   title: LocalizedString;
@@ -80,8 +96,8 @@ export const modelsMetadata: Record<ModelType, ModelMetadata> = {
       en: 'Discover whether you learn best through Visual, Auditory, Reading/Writing, or Kinesthetic modalities, including multimodal profiles.',
       ko: '시각(V), 청각(A), 읽기/쓰기(R), 체감(K) 중 선호하는 감각 양식을 파악합니다.'
     },
-    timeEstimate: { pt: '~2–3 min', en: '~2–3 min', ko: '~2-3분' },
-    questionCount: { pt: '16 questões de escolha única', en: '16 single-choice questions', ko: '16개 문항 (단일 선택)' },
+    timeEstimate: { pt: '~3–4 min', en: '~3–4 min', ko: '~3-4분' },
+    questionCount: { pt: '20 questões de escolha única', en: '20 single-choice questions', ko: '20개 문항 (단일 선택)' },
     author: 'Origem: Neil Fleming',
     year: '1987',
     category: { pt: 'Pilar S · Sensorial', en: 'Pillar S · Sensory', ko: 'S기둥 · 감각' },
@@ -112,8 +128,8 @@ export const modelsMetadata: Record<ModelType, ModelMetadata> = {
       en: 'Understand how you grasp and transform experience: Diverger, Assimilator, Converger, or Accommodator.',
       ko: '경험적 학습 과정에서 경험을 어떻게 처리하고 변환하는지에 따라 4가지 학습 스타일로 분류합니다.'
     },
-    timeEstimate: { pt: '~3 min', en: '~3 min', ko: '~3분' },
-    questionCount: { pt: '12 questões situacionais', en: '12 situational questions', ko: '12개 문항 (단일 선택)' },
+    timeEstimate: { pt: '~4 min', en: '~4 min', ko: '~4분' },
+    questionCount: { pt: '20 questões situacionais', en: '20 situational questions', ko: '20개 문항 (단일 선택)' },
     author: 'Origem: David Kolb',
     year: '1984',
     category: { pt: 'Pilar E · Experiencial', en: 'Pillar E · Experiential', ko: 'E기둥 · 경험' },
@@ -144,25 +160,25 @@ export const modelsMetadata: Record<ModelType, ModelMetadata> = {
       en: 'Intelligence is multifaceted. Identify your top strengths among 7 distinct intelligences.',
       ko: '인간의 지능을 독립된 영역으로 분류하여 논리, 언어, 공간, 음악, 신체, 대인, 자기성찰 강점을 측정합니다.'
     },
-    timeEstimate: { pt: '~4–5 min', en: '~4–5 min', ko: '~4-5분' },
-    questionCount: { pt: '21 afirmações (Escala 1 a 5)', en: '21 statements (1-5 Likert scale)', ko: '21개 문항 (5점 척도)' },
+    timeEstimate: { pt: '~6–8 min', en: '~6–8 min', ko: '~6-8분' },
+    questionCount: { pt: '35 questões (30 afirmações + 5 situações)', en: '35 questions (30 statements + 5 scenarios)', ko: '35개 문항 (30개 진술 + 5개 상황)' },
     author: 'Origem: Howard Gardner',
     year: '1983',
-    category: { pt: 'Pilar I · Inteligências', en: 'Pillar I · Intelligences', ko: 'I기둥 · 지능' },
+    category: { pt: 'Pilar I · Inteligências', en: 'Pilar I · Intelligences', ko: 'I기둥 · 지능' },
     disclaimer: {
       pt: 'Todas as pessoas possuem as 7 inteligências em graus variados e todas podem ser desenvolvidas ao longo da vida através de prática intencional.',
       en: 'Everyone has all intelligences to varying degrees and can cultivate them through practice.',
       ko: '이 결과는 개인의 잠재력과 선호도를 발견하기 위한 참고용이며 단일 IQ 테스트가 아닙니다.'
     },
     whatItMeasures: {
-      pt: 'Avalia a intensidade relativa de 7 inteligências humanas independentes, apontando seus dois ou três pontos mais fortes.',
-      en: 'Assesses your relative strengths across 7 independent human intelligences.',
-      ko: '논리·수학, 언어, 공간, 음악, 신체·운동, 대인관계, 자기성찰 등 7대 지능 영역의 상대적 발달도를 측정합니다.'
+      pt: 'Avalia a intensidade relativa de 7 inteligências humanas independentes com algoritmo anti-burla (itens invertidos e escolhas situacionais forçadas).',
+      en: 'Assesses relative strengths across 7 independent intelligences with reverse-scoring and scenario choices.',
+      ko: '7대 지능 영역의 상대적 발달도를 정밀 측정한 후 검증합니다.'
     },
     instructions: {
-      pt: 'Indique o quanto cada afirmação tem a ver com você, em uma escala de 1 (Discordo totalmente) a 5 (Concordo totalmente).',
-      en: 'Rate how much each statement describes you on a 1-5 scale (1 = Strongly disagree, 5 = Strongly agree).',
-      ko: '각 문장에 대해 나와의 일치 정도를 1(전혀 아니다)부터 5(매우 그렇다)까지 평가하세요.'
+      pt: 'Responda às 30 afirmações (escala 1 a 5) e, em seguida, escolha 1 opção para cada uma das 5 situações cotidianas.',
+      en: 'Rate the 30 statements (1-5 scale) and choose 1 option for each of the 5 real-world scenarios.',
+      ko: '30개 문항에 대해 평가한 후, 5개 상황에서 각각 1개 옵션을 선택하세요.'
     },
     tags: ['Múltiplas Inteligências', 'Cognição', 'Talentos', 'Autoconhecimento']
   }
@@ -904,6 +920,190 @@ export const varkQuestions: SingleSelectQuestion<VarkModality>[] = [
         }
       }
     ]
+  },
+  {
+    "id": "VARK-17",
+    "prompt": {
+      "pt": "Ao investigar uma suspeita de erro ou falha em um projeto...",
+      "en": "When investigating a suspected error in a project...",
+      "ko": "프로젝트에서 오류나 문제점을 조사할 때..."
+    },
+    "options": [
+      {
+        "id": "VARK-17-A",
+        "tag": "V",
+        "text": {
+          "pt": "Examino diagramas visuais de fluxo e comparações de tela.",
+          "en": "I examine visual flow diagrams and screen comparisons.",
+          "ko": "시각적 흐름도와 화면 비교 자료를 조사한다."
+        }
+      },
+      {
+        "id": "VARK-17-B",
+        "tag": "A",
+        "text": {
+          "pt": "Converso com os envolvidos e discuto oralmente cada hipótese.",
+          "en": "I talk with team members and discuss each hypothesis out loud.",
+          "ko": "관련자들과 대화하며 가설을 말로 논의한다."
+        }
+      },
+      {
+        "id": "VARK-17-C",
+        "tag": "R",
+        "text": {
+          "pt": "Analiso relatórios escritos minuciosos e registros de auditoria.",
+          "en": "I analyze detailed written reports and audit logs.",
+          "ko": "상세한 서면 보고서와 감사 로그를 읽고 분석한다."
+        }
+      },
+      {
+        "id": "VARK-17-D",
+        "tag": "K",
+        "text": {
+          "pt": "Simulo o erro na prática executando o passo a passo com as mãos.",
+          "en": "I reproduce the error hands-on step by step.",
+          "ko": "단계별로 직접 실행하며 오류를 재현해본다."
+        }
+      }
+    ]
+  },
+  {
+    "id": "VARK-18",
+    "prompt": {
+      "pt": "Ao montar um equipamento novo ou item em sua casa...",
+      "en": "When assembling a new device or item at home...",
+      "ko": "집에서 새로운 기기나 가구를 조립할 때..."
+    },
+    "options": [
+      {
+        "id": "VARK-18-A",
+        "tag": "V",
+        "text": {
+          "pt": "Sigo os desenhos ilustrados do folheto visual de montagem.",
+          "en": "I follow the visual diagrams in the assembly flyer.",
+          "ko": "조립 설명서의 시각적 그림과 도면을 본다."
+        }
+      },
+      {
+        "id": "VARK-18-B",
+        "tag": "A",
+        "text": {
+          "pt": "Prefiro que alguém dite o passo a passo enquanto eu executo.",
+          "en": "I prefer someone telling me the steps out loud.",
+          "ko": "누군가 말로 순서를 알려주면 따라 한다."
+        }
+      },
+      {
+        "id": "VARK-18-C",
+        "tag": "R",
+        "text": {
+          "pt": "Leio o texto completo do manual de instruções do início ao fim.",
+          "en": "I read the complete manual text from start to finish.",
+          "ko": "매뉴얼의 서면 글을 처음부터 끝까지 읽는다."
+        }
+      },
+      {
+        "id": "VARK-18-D",
+        "tag": "K",
+        "text": {
+          "pt": "Vou encaixando as peças com as mãos por tentativa e erro.",
+          "en": "I assemble pieces hands-on by trial and error.",
+          "ko": "부품을 직접 손으로 대보며 시행착오로 맞춘다."
+        }
+      }
+    ]
+  },
+  {
+    "id": "VARK-19",
+    "prompt": {
+      "pt": "Para decidir se um novo curso ou ferramenta vale o investimento...",
+      "en": "To evaluate if a new course or tool is worth it...",
+      "ko": "새로운 강좌나 도구가 투자할 가치가 있는지 평가할 때..."
+    },
+    "options": [
+      {
+        "id": "VARK-19-A",
+        "tag": "V",
+        "text": {
+          "pt": "Analiso infográficos comparativos e visualizações da plataforma.",
+          "en": "I analyze visual comparison charts and interface previews.",
+          "ko": "비교 인포그래픽과 시각적 화면 캡처를 확인한다."
+        }
+      },
+      {
+        "id": "VARK-19-B",
+        "tag": "A",
+        "text": {
+          "pt": "Escuto recomendações em áudio, podcasts e conversas com ex-alunos.",
+          "en": "I listen to audio reviews, podcasts, and talks with alumni.",
+          "ko": "오디오 수기, 팟캐스트 및 수강생의 구두 추천을 듣는다."
+        }
+      },
+      {
+        "id": "VARK-19-C",
+        "tag": "R",
+        "text": {
+          "pt": "Leio a ementa textual completa, termos e análises por escrito.",
+          "en": "I read the full written syllabus, specs, and text reviews.",
+          "ko": "상세한 서면 커리큘럼, 사양 및 글 리뷰를 읽는다."
+        }
+      },
+      {
+        "id": "VARK-19-D",
+        "tag": "K",
+        "text": {
+          "pt": "Faço um teste prático de degustação ou aula experimental interativa.",
+          "en": "I test a trial version or interactive hands-on demo class.",
+          "ko": "체험판이나 무료 실습 클래스에 직접 참여해본다."
+        }
+      }
+    ]
+  },
+  {
+    "id": "VARK-20",
+    "prompt": {
+      "pt": "Ao repassar uma instrução complexa e urgente para um colega...",
+      "en": "When sending an urgent complex instruction to a colleague...",
+      "ko": "동료에게 긴급하고 복잡한 지시를 전달할 때..."
+    },
+    "options": [
+      {
+        "id": "VARK-20-A",
+        "tag": "V",
+        "text": {
+          "pt": "Desenho um diagrama rápido ou envio um esquema visual.",
+          "en": "I draw a quick diagram or send a visual sketch.",
+          "ko": "빠른 도표를 그리거나 시각적 스케치를 보낸다."
+        }
+      },
+      {
+        "id": "VARK-20-B",
+        "tag": "A",
+        "text": {
+          "pt": "Ligo ou gravo um áudio curto explicando verbalmente com clareza.",
+          "en": "I call or leave a quick voice message explaining it out loud.",
+          "ko": "전화를 걸거나 짧은 음성 메시지로 말로 설명한다."
+        }
+      },
+      {
+        "id": "VARK-20-C",
+        "tag": "R",
+        "text": {
+          "pt": "Escrevo uma mensagem com tópicos numerados bem estruturados.",
+          "en": "I write a well-structured numbered bullet list.",
+          "ko": "번호가 매겨진 요약 텍스트 목록으로 적어 보낸다."
+        }
+      },
+      {
+        "id": "VARK-20-D",
+        "tag": "K",
+        "text": {
+          "pt": "Vou até a mesa dele e demonstro na prática exatamente como fazer.",
+          "en": "I go over and demonstrate live hands-on how to do it.",
+          "ko": "직접 가서 어떻게 하는지 시연하며 보여준다."
+        }
+      }
+    ]
   }
 ];
 
@@ -1459,200 +1659,1061 @@ export const kolbQuestions: SingleSelectQuestion<KolbDimension>[] = [
         }
       }
     ]
+  },
+  {
+    "id": "KOLB-13",
+    "prompt": {
+      "pt": "Quando surge um conflito de opiniões na sua equipe...",
+      "en": "When a conflict of opinions arises in your team...",
+      "ko": "팀 내에서 의견 충돌이 발생할 때..."
+    },
+    "options": [
+      {
+        "id": "KOLB-13-A",
+        "tag": "AE",
+        "text": {
+          "pt": "Proponho uma experiência prática imediata para testar qual ideia funciona na prática.",
+          "en": "Propose an immediate live test to see which idea works.",
+          "ko": "어떤 아이디어가 작동하는지 즉시 실습 테스트를 제안한다."
+        }
+      },
+      {
+        "id": "KOLB-13-B",
+        "tag": "RO",
+        "text": {
+          "pt": "Ouço neutramente todas as partes e pondero os motivos de cada um antes de opinar.",
+          "en": "Listen neutrally to all sides and weigh perspectives.",
+          "ko": "양측의 입장을 중립적으로 듣고 의견을 정리해본다."
+        }
+      },
+      {
+        "id": "KOLB-13-C",
+        "tag": "AC",
+        "text": {
+          "pt": "Analiso a lógica subjacente e as premissas conceituais de cada proposta.",
+          "en": "Analyze the underlying logic and conceptual premises.",
+          "ko": "각 제안의 논리와 전제를 분석한다."
+        }
+      },
+      {
+        "id": "KOLB-13-D",
+        "tag": "CE",
+        "text": {
+          "pt": "Presto atenção ao clima humano e ao sentimento das pessoas envolvidas.",
+          "en": "Focus on the interpersonal mood and feelings involved.",
+          "ko": "관련자들의 감정과 분위기를 살펴본다."
+        }
+      }
+    ]
+  },
+  {
+    "id": "KOLB-14",
+    "prompt": {
+      "pt": "Ao planejar sua evolução de carreira e aprendizado continuo...",
+      "en": "When planning your career growth and ongoing learning...",
+      "ko": "경력 개발과 지속적 학습을 계획할 때..."
+    },
+    "options": [
+      {
+        "id": "KOLB-14-A",
+        "tag": "AE",
+        "text": {
+          "pt": "Busco projetos desafiadores no trabalho onde possa atuar e errar na prática.",
+          "en": "Seek challenging projects where I can act and learn hands-on.",
+          "ko": "직접 실행하며 배울 수 있는 도전적 프로젝트를 찾는다."
+        }
+      },
+      {
+        "id": "KOLB-14-B",
+        "tag": "RO",
+        "text": {
+          "pt": "Observo a trajetória de profissionais inspiradores e reflito sobre suas lições.",
+          "en": "Observe role models and reflect on their trajectories.",
+          "ko": "멘토들의 궤적을 지켜보고 성찰한다."
+        }
+      },
+      {
+        "id": "KOLB-14-C",
+        "tag": "AC",
+        "text": {
+          "pt": "Mapeio gaps de competência com base em frameworks estruturados da área.",
+          "en": "Map skill gaps using structured domain frameworks.",
+          "ko": "체계적인 역량 프레임워크로 부족한 점을 분석한다."
+        }
+      },
+      {
+        "id": "KOLB-14-D",
+        "tag": "CE",
+        "text": {
+          "pt": "Sigo minha intuição e paixão pessoal sobre o que faz sentido sentir no momento.",
+          "en": "Follow personal intuition and passion about what feels right.",
+          "ko": "가장 와닿고 열정이 느껴지는 길을 선택한다."
+        }
+      }
+    ]
+  },
+  {
+    "id": "KOLB-15",
+    "prompt": {
+      "pt": "Quando uma nova metodologia ou ferramenta é adotada no seu trabalho...",
+      "en": "When a new tool or methodology is adopted at your work...",
+      "ko": "직장에서 새로운 도구나 방법론이 도입될 때..."
+    },
+    "options": [
+      {
+        "id": "KOLB-15-A",
+        "tag": "AE",
+        "text": {
+          "pt": "Mergulho direto na ferramenta e vou fuçando nos botões na prática.",
+          "en": "Jump straight in and explore the controls hands-on.",
+          "ko": "일단 직접 눌러보고 탐색하며 익힌다."
+        }
+      },
+      {
+        "id": "KOLB-15-B",
+        "tag": "RO",
+        "text": {
+          "pt": "Observo primeiro os resultados e reações dos colegas mais experientes.",
+          "en": "Observe the initial results and reactions of early adopters.",
+          "ko": "다른 사람들의 사용 결과와 반응을 유심히 관찰한다."
+        }
+      },
+      {
+        "id": "KOLB-15-C",
+        "tag": "AC",
+        "text": {
+          "pt": "Estudo a documentação, os princípios de design e a arquitetura do sistema.",
+          "en": "Study the documentation and systemic architecture first.",
+          "ko": "문서와 시스템 원리를 먼저 공부한다."
+        }
+      },
+      {
+        "id": "KOLB-15-D",
+        "tag": "CE",
+        "text": {
+          "pt": "Avalio como essa mudança afeta minha rotina de trabalho e a dos colegas.",
+          "en": "Evaluate how the change impacts my daily experience and my peers.",
+          "ko": "이 변화가 나/동료들의 경험에 어떤 영향을 줄지 느낀다."
+        }
+      }
+    ]
+  },
+  {
+    "id": "KOLB-16",
+    "prompt": {
+      "pt": "Durante um processo de brainstorming em equipe, você costuma...",
+      "en": "During a team brainstorming session, you usually...",
+      "ko": "팀 브레인스토밍 과정에서 당신은 보통..."
+    },
+    "options": [
+      {
+        "id": "KOLB-16-A",
+        "tag": "AE",
+        "text": {
+          "pt": "Impulsionar o grupo para transformar as ideias em plano de ação imediato.",
+          "en": "Drive the group toward turning ideas into an action plan.",
+          "ko": "아이디어를 실행 계획으로 빨리 연결하자고 독려한다."
+        }
+      },
+      {
+        "id": "KOLB-16-B",
+        "tag": "RO",
+        "text": {
+          "pt": "Ouvir e sintetizar as várias perspectivas trazidas pelos membros.",
+          "en": "Listen and synthesize the various perspectives raised.",
+          "ko": "다양한 관점들을 경청하고 하나로 정리해본다."
+        }
+      },
+      {
+        "id": "KOLB-16-C",
+        "tag": "AC",
+        "text": {
+          "pt": "Questionar a coerência lógica, dados e viabilidade das propostas.",
+          "en": "Challenge logical coherence and feasibility data.",
+          "ko": "제안된 아이디어의 논리와 타당성을 검증한다."
+        }
+      },
+      {
+        "id": "KOLB-16-D",
+        "tag": "CE",
+        "text": {
+          "pt": "Apoiar ideias criativas que ressoem com as necessidades reais das pessoas.",
+          "en": "Support creative ideas that resonate emotionally with user needs.",
+          "ko": "사용자의 실제 공감대를 자극하는 창의적 아이디어를 밀어준다."
+        }
+      }
+    ]
+  },
+  {
+    "id": "KOLB-17",
+    "prompt": {
+      "pt": "Ao receber uma crítica construtiva ou feedback de desempenho...",
+      "en": "When receiving constructive criticism or performance feedback...",
+      "ko": "피드백이나 평가를 받았을 때..."
+    },
+    "options": [
+      {
+        "id": "KOLB-17-A",
+        "tag": "AE",
+        "text": {
+          "pt": "Crio imediatamente uma meta prática para mudar meus hábitos no dia seguinte.",
+          "en": "Create a practical plan to adjust my habits starting tomorrow.",
+          "ko": "내일부터 행동을 바꿀 실천 목표를 즉시 세운다."
+        }
+      },
+      {
+        "id": "KOLB-17-B",
+        "tag": "RO",
+        "text": {
+          "pt": "Reflito silenciosamente ao longo de alguns dias para absorver o feedback.",
+          "en": "Reflect quietly over a few days to digest the feedback.",
+          "ko": "며칠 동안 곱씹으며 피드백을 깊이 들어본다."
+        }
+      },
+      {
+        "id": "KOLB-17-C",
+        "tag": "AC",
+        "text": {
+          "pt": "Examino os fatos e evidências objetivas que justificam aquele diagnóstico.",
+          "en": "Examine the facts and objective evidence supporting the feedback.",
+          "ko": "피드백의 근거가 되는 객관적 사실과 데이터를 분석한다."
+        }
+      },
+      {
+        "id": "KOLB-17-D",
+        "tag": "CE",
+        "text": {
+          "pt": "Presto atenção à intenção emocional da pessoa e como aquilo me afeta.",
+          "en": "Focus on the emotional intent behind the feedback and how it feels.",
+          "ko": "상대방의 마음과 나 자신의 감정적 반응에 집중한다."
+        }
+      }
+    ]
+  },
+  {
+    "id": "KOLB-18",
+    "prompt": {
+      "pt": "Em oficinas de resolução de problemas complexos, seu estilo é...",
+      "en": "In complex problem-solving workshops, your style is...",
+      "ko": "복잡한 문제 해결 워크숍에서 당신의 스타일은..."
+    },
+    "options": [
+      {
+        "id": "KOLB-18-A",
+        "tag": "AE",
+        "text": {
+          "pt": "O construtor ágil que coloca a mão na massa no protótipo.",
+          "en": "The hands-on builder making the rapid prototype.",
+          "ko": "프로토타입을 빠르게 만드는 실습형 리더."
+        }
+      },
+      {
+        "id": "KOLB-18-B",
+        "tag": "RO",
+        "text": {
+          "pt": "O observador atento que enxerga conexões não óbvias.",
+          "en": "The observant thinker spotting non-obvious patterns.",
+          "ko": "숨겨진 맥락을 관찰하고 짚어내는 관찰자."
+        }
+      },
+      {
+        "id": "KOLB-18-C",
+        "tag": "AC",
+        "text": {
+          "pt": "O estrategista analítico que constrói o modelo conceitual.",
+          "en": "The analytical strategist building the conceptual framework.",
+          "ko": "개념 모델과 정교한 틀을 세우는 분석가."
+        }
+      },
+      {
+        "id": "KOLB-18-D",
+        "tag": "CE",
+        "text": {
+          "pt": "O conector empático que traz a voz da experiência humana.",
+          "en": "The empathetic connector grounding ideas in human experience.",
+          "ko": "인간적 경험과 공감을 중심으로 아이디어를 이끄는 연결자."
+        }
+      }
+    ]
+  },
+  {
+    "id": "KOLB-19",
+    "prompt": {
+      "pt": "Ao gerenciar seu tempo e lista de pendências diárias...",
+      "en": "When managing your time and daily to-do list...",
+      "ko": "하루 일과와 할 일 목록을 관리할 때..."
+    },
+    "options": [
+      {
+        "id": "KOLB-19-A",
+        "tag": "AE",
+        "text": {
+          "pt": "Tacho rapidamente as tarefas da lista conforme vou realizando.",
+          "en": "Focus on executing and crossing items off actively.",
+          "ko": "할 일을 직접 하나씩 실행하며 빠르게 처리한다."
+        }
+      },
+      {
+        "id": "KOLB-19-B",
+        "tag": "RO",
+        "text": {
+          "pt": "Pauso no meio do dia para recalibrar o que é prioridade real.",
+          "en": "Pause mid-day to reflect on genuine priorities.",
+          "ko": "중간중간 멈춰서 우선순위를 다시 점검한다."
+        }
+      },
+      {
+        "id": "KOLB-19-C",
+        "tag": "AC",
+        "text": {
+          "pt": "Uso matrizes de priorização lógica (urgência vs. importância).",
+          "en": "Use logical prioritization frameworks (Eisenhower matrix).",
+          "ko": "아이젠하워 매트릭스 같은 논리적 우선순위 틀을 쓴다."
+        }
+      },
+      {
+        "id": "KOLB-19-D",
+        "tag": "CE",
+        "text": {
+          "pt": "Escolho as tarefas de acordo com meu nível de energia e interesse no momento.",
+          "en": "Choose tasks flexibly based on current mood and energy.",
+          "ko": "그 순간의 컨디션과 내키는 감정에 맞춰 진행한다."
+        }
+      }
+    ]
+  },
+  {
+    "id": "KOLB-20",
+    "prompt": {
+      "pt": "Para você, a verdadeira prova de que um aprendizado foi bem-sucedido é...",
+      "en": "For you, the ultimate proof of successful learning is...",
+      "ko": "성공적인 학습의 가장 확실한 증거는..."
+    },
+    "options": [
+      {
+        "id": "KOLB-20-A",
+        "tag": "AE",
+        "text": {
+          "pt": "Sua capacidade de gerar resultados práticos mensuráveis.",
+          "en": "Your ability to generate measurable practical results.",
+          "ko": "측정 가능한 실질적 성과를 만들어내는 능력."
+        }
+      },
+      {
+        "id": "KOLB-20-B",
+        "tag": "RO",
+        "text": {
+          "pt": "Sua capacidade de enxergar o tema por múltiplos ângulos e nuances.",
+          "en": "Your capacity to view the topic from multiple nuanced angles.",
+          "ko": "주제를 다각도로 깊이 있게 이해하고 되돌아보는 능력."
+        }
+      },
+      {
+        "id": "KOLB-20-C",
+        "tag": "AC",
+        "text": {
+          "pt": "Sua capacidade de formular explicações teóricas impecáveis.",
+          "en": "Your ability to formulate flawless theoretical explanations.",
+          "ko": "체계적이고 결함 없는 이론적 모델을 구축하는 능력."
+        }
+      },
+      {
+        "id": "KOLB-20-D",
+        "tag": "CE",
+        "text": {
+          "pt": "A transformação profunda na sua percepção e intuição do assunto.",
+          "en": "A deep intuitive shift in your personal experience and awareness.",
+          "ko": "주제에 대한 자신의 직관과 내면적 경험이 변화하는 것."
+        }
+      }
+    ]
   }
 ];
 
-export const gardnerQuestions: LikertQuestion[] = [
+export const gardnerQuestions: GardnerQuestion[] = [
+  // --- 30 AFIRMAÇÕES LIKERT (1 a 5) COM SCORING INVERTIDO ANTI-BURLA ---
+  // Lógico-Matemática (LOG)
   {
-    "id": "MI-01",
-    "tag": "LOG",
-    "prompt": {
-      "pt": "Eu gosto de identificar padrões, regularidades e deduzir regras lógicas.",
-      "en": "I enjoy spotting patterns and inferring rules.",
-      "ko": "나는 규칙/패턴을 찾아내는 걸 좋아한다."
+    id: 'MI-01',
+    tag: 'LOG',
+    isReversed: false,
+    prompt: {
+      pt: 'Eu gosto de identificar padrões, regularidades e deduzir regras lógicas em sistemas complexos.',
+      en: 'I enjoy spotting patterns, regularities, and inferring logical rules in complex systems.',
+      ko: '복잡한 시스템에서 패턴, 규칙성을 찾아내고 논리적 규칙을 추론하는 것을 좋아합니다.'
     }
   },
   {
-    "id": "MI-02",
-    "tag": "LOG",
-    "prompt": {
-      "pt": "Entendo conceitos com mais rapidez quando são explicados com números, gráficos ou dados.",
-      "en": "I understand faster when explained with numbers or data.",
-      "ko": "숫자나 데이터로 설명하면 더 빨리 이해된다."
+    id: 'MI-02',
+    tag: 'LOG',
+    isReversed: false,
+    prompt: {
+      pt: 'Entendo conceitos com mais rapidez quando são explicados com números, gráficos ou dados estatísticos.',
+      en: 'I understand concepts faster when explained with numbers, charts, or statistical data.',
+      ko: '숫자, 차트 또는 통계 데이터로 설명할 때 개념을 더 빠르게 이해합니다.'
     }
   },
   {
-    "id": "MI-03",
-    "tag": "LOG",
-    "prompt": {
-      "pt": "Tenho o hábito de dividir problemas complexos em etapas lógicas para resolvê-los.",
-      "en": "I tend to break problems into steps to solve them.",
-      "ko": "문제를 단계별로 쪼개서 해결하는 편이다."
+    id: 'MI-03',
+    tag: 'LOG',
+    isReversed: true,
+    prompt: {
+      pt: 'Sinto grande impaciência ao lidar com cálculos, tabelas de dados ou análise rigorosa de causa e efeito.',
+      en: 'I feel very impatient dealing with calculations, data tables, or strict cause-and-effect analysis.',
+      ko: '계산, 데이터 표 또는 엄격한 원인과 결과 분석을 다룰 때 큰 지루함이나 답답함을 느낍니다.'
     }
   },
   {
-    "id": "MI-04",
-    "tag": "LIN",
-    "prompt": {
-      "pt": "Colocar meus pensamentos por escrito torna minhas ideias muito mais claras.",
-      "en": "Writing things down makes my thinking clearer.",
-      "ko": "글로 적어보면 생각이 더 또렷해진다."
+    id: 'MI-04',
+    tag: 'LOG',
+    isReversed: true,
+    prompt: {
+      pt: 'Prefiro confiar na intuição pura em vez de estruturar o raciocínio em etapas lógicas e ordenadas.',
+      en: 'I prefer relying on pure intuition rather than structuring reasoning into logical ordered steps.',
+      ko: '논리적이고 정돈된 단계로 사고를 구조화하기보다 순수한 직관에 의존하는 편입니다.'
+    }
+  },
+
+  // Linguística (LIN)
+  {
+    id: 'MI-05',
+    tag: 'LIN',
+    isReversed: false,
+    prompt: {
+      pt: 'Colocar meus pensamentos por escrito torna minhas ideias muito mais claras e organizadas.',
+      en: 'Putting my thoughts into writing makes my ideas much clearer and structured.',
+      ko: '생각을 글로 적어보면 제 아이디어가 훨씬 더 명확하고 정돈됩니다.'
     }
   },
   {
-    "id": "MI-05",
-    "tag": "LIN",
-    "prompt": {
-      "pt": "Gosto de aprimorar a forma como as coisas são ditas e escolher as palavras certas.",
-      "en": "I enjoy refining how things are expressed in words.",
-      "ko": "말/글 표현을 다듬는 걸 은근히 즐긴다."
+    id: 'MI-06',
+    tag: 'LIN',
+    isReversed: false,
+    prompt: {
+      pt: 'Gosto de aprimorar a forma como as coisas são ditas e escolher as palavras com exatidão.',
+      en: 'I enjoy refining how things are expressed and selecting words with precision.',
+      ko: '말이나 글의 표현을 다듬고 정확한 단어를 선택하는 것을 즐깁니다.'
     }
   },
   {
-    "id": "MI-06",
-    "tag": "LIN",
-    "prompt": {
-      "pt": "Ler ou escrever é uma das melhores maneiras de manter minha concentração.",
-      "en": "Reading or writing helps me focus.",
-      "ko": "읽기나 글쓰기를 하면 집중이 잘 된다."
+    id: 'MI-07',
+    tag: 'LIN',
+    isReversed: true,
+    prompt: {
+      pt: 'Acho cansativo ler textos longos ou redigir relatórios minuciosos por escrito.',
+      en: 'I find reading long texts or writing detailed written reports exhausting.',
+      ko: '긴 글을 읽거나 상세한 서면 보고서를 작성하는 것이 피곤하게 느껴집니다.'
     }
   },
   {
-    "id": "MI-07",
-    "tag": "SPA",
-    "prompt": {
-      "pt": "Consigo imaginar disposições espaciais, plantas ou estruturas 3D na minha mente com facilidade.",
-      "en": "I can imagine layouts/structures in my head.",
-      "ko": "머릿속으로 배치/구조를 그려가며 생각하는 편이다."
+    id: 'MI-08',
+    tag: 'LIN',
+    isReversed: true,
+    prompt: {
+      pt: 'Frequentemente tenho dificuldade em encontrar as palavras certas para explicar um conceito.',
+      en: 'I frequently find it hard to choose the right words to explain a concept.',
+      ko: '개념을 설명할 때 적절한 단어를 찾기 어려울 때가 자주 있습니다.'
+    }
+  },
+
+  // Espacial (SPA)
+  {
+    id: 'MI-09',
+    tag: 'SPA',
+    isReversed: false,
+    prompt: {
+      pt: 'Consigo visualizar disposições espaciais, plantas ou estruturas 3D na minha mente com clareza.',
+      en: 'I can clearly imagine 3D spatial layouts, blueprints, or physical structures in my mind.',
+      ko: '머릿속으로 3D 공간 배치, 도면 또는 입체 구조를 명확하게 시각화할 수 있습니다.'
     }
   },
   {
-    "id": "MI-08",
-    "tag": "SPA",
-    "prompt": {
-      "pt": "Diagramas, mapas visuais e esquemas aceleram bastante meu entendimento.",
-      "en": "Diagrams, maps, or visuals speed up my understanding.",
-      "ko": "그림/도식/지도 같은 자료가 있으면 이해가 빨라진다."
+    id: 'MI-10',
+    tag: 'SPA',
+    isReversed: false,
+    prompt: {
+      pt: 'Diagramas, mapas conceituais e infográficos aceleram imensamente meu entendimento.',
+      en: 'Diagrams, mind maps, and infographics greatly accelerate my comprehension.',
+      ko: '다이어그램, 마인드맵, 인포그래픽이 제 이해 속도를 크게 높여줍니다.'
     }
   },
   {
-    "id": "MI-09",
-    "tag": "SPA",
-    "prompt": {
-      "pt": "Costumo lembrar de detalhes visuais como cores, posições, formatos e layouts.",
-      "en": "I tend to remember visual details like color, shape, and position.",
-      "ko": "색, 모양, 위치 같은 시각 정보를 잘 기억한다."
+    id: 'MI-11',
+    tag: 'SPA',
+    isReversed: true,
+    prompt: {
+      pt: 'Sinto dificuldade para me orientar em mapas visuais ou interpretar gráficos geométricos.',
+      en: 'I find it difficult to orient myself using visual maps or interpret geometric charts.',
+      ko: '시각 지도나 기하학적 차트를 해석하거나 방향을 잡는 데 어려움을 느낍니다.'
     }
   },
   {
-    "id": "MI-10",
-    "tag": "MUS",
-    "prompt": {
-      "pt": "Ritmo, melodias ou músicas de fundo me ajudam a memorizar e fixar informações.",
-      "en": "Rhythm or melody helps me remember.",
-      "ko": "리듬이나 멜로디가 있으면 더 잘 외워진다."
+    id: 'MI-12',
+    tag: 'SPA',
+    isReversed: true,
+    prompt: {
+      pt: 'Quadros cheios de esquemas visuais e desenhos mais me confundem do que me ajudam.',
+      en: 'Boards full of visual diagrams and sketches confuse me more than help me.',
+      ko: '복잡한 시각 다이어그램과 그림이 가득한 판서는 도움보다는 혼란을 줍니다.'
+    }
+  },
+
+  // Musical (MUS)
+  {
+    id: 'MI-13',
+    tag: 'MUS',
+    isReversed: false,
+    prompt: {
+      pt: 'Ritmo, melodias ou sonoridades me ajudam a memorizar e conectar conteúdos abstratos.',
+      en: 'Rhythm, melodies, or sound patterns help me memorize and connect abstract content.',
+      ko: '리듬, 멜로디 또는 소리 패턴이 추상적인 내용을 암기하고 연결하는 데 도움이 됩니다.'
     }
   },
   {
-    "id": "MI-11",
-    "tag": "MUS",
-    "prompt": {
-      "pt": "Sou muito sensível a variações de tom de voz, entonação e ritmo na fala das pessoas.",
-      "en": "I’m fairly sensitive to changes in tone/pitch.",
-      "ko": "말투/톤 변화(억양)에 비교적 민감한 편이다."
+    id: 'MI-14',
+    tag: 'MUS',
+    isReversed: false,
+    prompt: {
+      pt: 'Sou muito sensível a variações de tom de voz, entonação e cadência na fala das pessoas.',
+      en: 'I am highly sensitive to variations in tone of voice, pitch, and cadence in speech.',
+      ko: '사람들의 말에서 음높이, 억양, 템포의 변화를 매우 민감하게 알아차립니다.'
     }
   },
   {
-    "id": "MI-12",
-    "tag": "MUS",
-    "prompt": {
-      "pt": "Noto rapidamente padrões sonoros repetitivos, batidas ou ruídos no ambiente.",
-      "en": "I quickly notice repeating sound patterns.",
-      "ko": "반복되는 소리 패턴을 금방 알아차린다."
+    id: 'MI-15',
+    tag: 'MUS',
+    isReversed: true,
+    prompt: {
+      pt: 'Raramente presto atenção a ritmos ou melodias e sons ambiente passam despercebidos por mim.',
+      en: 'I rarely pay attention to rhythms or melodies, and ambient sounds go mostly unnoticed by me.',
+      ko: '리듬이나 멜로디에 거의 신경 쓰지 않으며 배경 소음도 그냥 지나치는 편입니다.'
     }
   },
   {
-    "id": "MI-13",
-    "tag": "KIN",
-    "prompt": {
-      "pt": "Aprendo muito mais rápido quando eu mesmo realizo a atividade fisicamente.",
-      "en": "I learn much faster by doing it myself.",
-      "ko": "직접 해보면 훨씬 빨리 배운다."
+    id: 'MI-16',
+    tag: 'MUS',
+    isReversed: true,
+    prompt: {
+      pt: 'Músicas de fundo ou estímulos sonoros durante o estudo tendem apenas a me distrair.',
+      en: 'Background music or audio cues during study tend to distract me rather than help.',
+      ko: '공부할 때 배경 음악이나 소리 자극은 집중을 방해하는 요소일 뿐입니다.'
+    }
+  },
+
+  // Cinestésica (KIN)
+  {
+    id: 'MI-17',
+    tag: 'KIN',
+    isReversed: false,
+    prompt: {
+      pt: 'Aprendo muito mais rápido quando eu mesmo realizo a atividade fisicamente com as mãos.',
+      en: 'I learn much faster when I physically execute the task myself using my hands.',
+      ko: '손으로 직접 몸을 움직여 실습할 때 훨씬 더 빠르게 배웁니다.'
     }
   },
   {
-    "id": "MI-14",
-    "tag": "KIN",
-    "prompt": {
-      "pt": "Ficar parado sentado por muito tempo prejudica meu foco; me movimentar recarrega minha atenção.",
-      "en": "Sitting too long hurts my focus; moving helps me refocus.",
-      "ko": "오래 앉아 있으면 집중이 떨어지고, 움직이면 다시 집중된다."
+    id: 'MI-18',
+    tag: 'KIN',
+    isReversed: false,
+    prompt: {
+      pt: 'Ficar parado ouvindo explicações passivas cansa meu foco; me movimentar recarrega minha atenção.',
+      en: 'Sitting still during passive lectures drains my focus; moving recharges my attention.',
+      ko: '오래 앉아 수동적으로 듣기만 하면 집중력이 떨어지고, 몸을 움직여야 주의력이 회복됩니다.'
     }
   },
   {
-    "id": "MI-15",
-    "tag": "KIN",
-    "prompt": {
-      "pt": "Manusear ferramentas, objetos ou gesticular enquanto explico facilita meu aprendizado.",
-      "en": "Hands-on manipulation helps me learn.",
-      "ko": "손으로 만지고 조작하는 활동이 이해에 도움이 된다."
+    id: 'MI-19',
+    tag: 'KIN',
+    isReversed: true,
+    prompt: {
+      pt: 'Prefiro estudar apenas lendo em silêncio a ter que fazer simulações práticas ou manusear objetos.',
+      en: 'I prefer quiet reading over doing practical simulations or manipulating physical objects.',
+      ko: '실습 시뮬레이션이나 물체를 다루는 것보다 정적으로 글로 읽는 것을 선호합니다.'
     }
   },
   {
-    "id": "MI-16",
-    "tag": "INTER",
-    "prompt": {
-      "pt": "Conversar e debater com outras pessoas me ajuda a organizar minhas próprias ideias.",
-      "en": "Talking with people helps organize my thoughts.",
-      "ko": "사람과 얘기하다 보면 생각이 정리된다."
+    id: 'MI-20',
+    tag: 'KIN',
+    isReversed: true,
+    prompt: {
+      pt: 'Tenho pouca afinidade com aprendizado que exige coordenação física, gestos ou movimento.',
+      en: 'I have little affinity for learning that requires physical coordination or movement.',
+      ko: '신체 조율, 동작 또는 움직임이 요구되는 학습 방식에 별다른 흥미를 느끼지 못합니다.'
+    }
+  },
+
+  // Interpessoal (INTER)
+  {
+    id: 'MI-21',
+    tag: 'INTER',
+    isReversed: false,
+    prompt: {
+      pt: 'Conversar e debater com outras pessoas me ajuda a clarear e organizar minhas ideias.',
+      en: 'Discussing and debating with others helps me clarify and organize my thoughts.',
+      ko: '다른 사람들과 대화하고 토론하는 과정이 제 생각을 정리하는 데 도움을 줍니다.'
     }
   },
   {
-    "id": "MI-17",
-    "tag": "INTER",
-    "prompt": {
-      "pt": "Tenho facilidade para perceber os sentimentos dos outros e sentir o clima do ambiente.",
-      "en": "I’m fairly good at reading others’ emotions and the room.",
-      "ko": "상대의 감정/분위기를 빠르게 파악하는 편이다."
+    id: 'MI-22',
+    tag: 'INTER',
+    isReversed: false,
+    prompt: {
+      pt: 'Percebo com facilidade o estado emocional, intenções e dinâmicas sociais das pessoas ao redor.',
+      en: 'I easily pick up on the emotional state, intentions, and social dynamics of people around me.',
+      ko: '주변 사람들의 감정 상태, 의도, 집단 분위기를 쉽게 파악합니다.'
     }
   },
   {
-    "id": "MI-18",
-    "tag": "INTER",
-    "prompt": {
-      "pt": "Fico mais motivado e rendo melhor trabalhando em grupo do que sozinho.",
-      "en": "I’m more motivated and perform better with others than alone.",
-      "ko": "혼자보다 같이 할 때 동기나 성과가 더 난다."
+    id: 'MI-23',
+    tag: 'INTER',
+    isReversed: false,
+    prompt: {
+      pt: 'Fico mais motivado e rendo melhor trabalhando colaborativamente em grupo do que totalmente sozinho.',
+      en: 'I am more motivated and perform better working in a group than completely alone.',
+      ko: '혼자 일할 때보다 그룹으로 협력할 때 동기부여가 더 잘 되고 성과가 올라갑니다.'
     }
   },
   {
-    "id": "MI-19",
-    "tag": "INTRA",
-    "prompt": {
-      "pt": "Consigo analisar com clareza os motivos pelos quais gosto ou desgosto de algo.",
-      "en": "I can explain to myself why I like/dislike something.",
-      "ko": "내가 왜 이걸 좋아/싫어하는지 스스로 설명할 수 있다."
+    id: 'MI-24',
+    tag: 'INTER',
+    isReversed: true,
+    prompt: {
+      pt: 'Prefiro resolver qualquer problema sozinho e me incomoda ter que interagir em grupo para aprender.',
+      en: 'I prefer solving problems entirely alone and dislike needing group interaction to learn.',
+      ko: '학습 시 타인과 상호작용하는 것이 번거롭고 모든 문제를 혼자 해결하는 편이 좋습니다.'
     }
   },
   {
-    "id": "MI-20",
-    "tag": "INTRA",
-    "prompt": {
-      "pt": "Tenho facilidade para definir metas pessoais e dosar meu próprio ritmo de aprendizado.",
-      "en": "I’m good at setting goals and pacing myself.",
-      "ko": "목표를 세우고 혼자 페이스를 잡는 편이다."
+    id: 'MI-25',
+    tag: 'INTER',
+    isReversed: true,
+    prompt: {
+      pt: 'Tenho dificuldade para notar quando alguém no grupo está desconfortável ou precisando de apoio.',
+      en: 'I find it hard to notice when someone in the group is feeling uncomfortable or needs support.',
+      ko: '그룹의 누군가가 불편해하거나 도움이 필요할 때 이를 알아차리기 어렵습니다.'
+    }
+  },
+
+  // Intrapessoal (INTRA)
+  {
+    id: 'MI-26',
+    tag: 'INTRA',
+    isReversed: false,
+    prompt: {
+      pt: 'Consigo analisar com clareza os motivos profundos pelos quais tenho afinidade ou rejeição por algo.',
+      en: 'I can clearly analyze the deeper reasons why I feel drawn to or resistant toward something.',
+      ko: '제가 왜 무언가에 이끌리거나 거부감을 느끼는지 그 이유를 명확하게 분석할 수 있습니다.'
     }
   },
   {
-    "id": "MI-21",
-    "tag": "INTRA",
-    "prompt": {
-      "pt": "Preciso de momentos a sós em silêncio para processar o que aprendi e recarregar energias.",
-      "en": "I need alone time to process and reset.",
-      "ko": "혼자 생각 정리할 시간이 꼭 필요하다."
+    id: 'MI-27',
+    tag: 'INTRA',
+    isReversed: false,
+    prompt: {
+      pt: 'Tenho facilidade para estabelecer metas pessoais de estudo e dosar meu próprio ritmo de evolução.',
+      en: 'I find it easy to set personal goals and manage my own pace of development.',
+      ko: '개인적 학습 목표를 세우고 스스로의 성장 페이스를 조절하는 것이 쉽습니다.'
     }
+  },
+  {
+    id: 'MI-28',
+    tag: 'INTRA',
+    isReversed: false,
+    prompt: {
+      pt: 'Preciso de momentos a sós em silêncio para processar o que aprendi e recarregar minhas energias.',
+      en: 'I need quiet alone time to process what I have learned and recharge my energy.',
+      ko: '배운 내용을 정리하고 에너지를 충전하기 위해 혼자만의 조용한 시간이 꼭 필요합니다.'
+    }
+  },
+  {
+    id: 'MI-29',
+    tag: 'INTRA',
+    isReversed: true,
+    prompt: {
+      pt: 'Raramente paro para examinar minhas próprias emoções ou pontos fracos ao longo dos estudos.',
+      en: 'I rarely stop to examine my own emotions or personal weak points while studying.',
+      ko: '학습 과정에서 제 자신의 감정이나 취약점을 조용히 돌아보는 일이 거의 없습니다.'
+    }
+  },
+  {
+    id: 'MI-30',
+    tag: 'INTRA',
+    isReversed: true,
+    prompt: {
+      pt: 'Dependo de cobrança e prazos externos porque acho difícil autoavaliar meu próprio aprendizado.',
+      en: 'I rely on external pressure and deadlines because self-evaluating my progress is hard.',
+      ko: '스스로의 학습 진도를 평가하기 어렵기 때문에 외부의 압박이나 기한에 의존하는 편입니다.'
+    }
+  },
+
+  // --- 5 SITUAÇÕES COTIDIANAS (FORCED CHOICE ENTRE AS 7 INTELICÊNCIAS) ---
+  {
+    id: 'SIT-01',
+    prompt: {
+      pt: 'SITUAÇÃO 1: Sua equipe precisa planejar um novo projeto complexo com prazo apertado. Como você escolhe contribuir prioritariamente?',
+      en: 'SCENARIO 1: Your team needs to plan a complex project on a tight deadline. How do you choose to contribute first?',
+      ko: '상황 1: 팀이 촉박한 기한 내에 복잡한 신규 프로젝트를 기획해야 합니다. 당신은 우선적으로 어떻게 기여하겠습니까?'
+    },
+    options: [
+      {
+        id: 'SIT-01-LOG',
+        tag: 'LOG',
+        text: {
+          pt: 'Estruturar o cronograma lógico, a análise de custos e as métricas exatas de desempenho.',
+          en: 'Structure the logical timeline, cost analysis, and exact performance metrics.',
+          ko: '논리적 일정, 비용 분석 및 정확한 성과 지표를 구조화합니다.'
+        }
+      },
+      {
+        id: 'SIT-01-LIN',
+        tag: 'LIN',
+        text: {
+          pt: 'Redigir o documento de proposta formal, o escopo detalhado e a justificativa por escrito.',
+          en: 'Draft the formal proposal document, detailed scope, and written rationale.',
+          ko: '공식 제안서, 상세 범위 및 서면 근거를 명확하게 작성합니다.'
+        }
+      },
+      {
+        id: 'SIT-01-SPA',
+        tag: 'SPA',
+        text: {
+          pt: 'Desenhar a arquitetura visual, o mapa conceitual do projeto e os esquemas de fluxo.',
+          en: 'Design the visual architecture, conceptual project map, and workflow diagrams.',
+          ko: '시각적 아키텍처, 마인드맵 및 업무 흐름도를 설계합니다.'
+        }
+      },
+      {
+        id: 'SIT-01-MUS',
+        tag: 'MUS',
+        text: {
+          pt: 'Ajustar a cadência das reuniões, o clima sonoro e a sonoridade da apresentação aos clientes.',
+          en: 'Fine-tune the meeting cadence, sound atmosphere, and tone of the pitch presentation.',
+          ko: '회의의 템포, 분위기 및 발표의 억양과 소리 톤을 조율합니다.'
+        }
+      },
+      {
+        id: 'SIT-01-KIN',
+        tag: 'KIN',
+        text: {
+          pt: 'Construir rapidamente um protótipo físico ou piloto prático para testar a ideia em campo.',
+          en: 'Quickly build a physical prototype or practical pilot to test the idea live.',
+          ko: '아이디어를 현장에서 테스트할 미니 프로토타입이나 실습 모델을 바로 만듭니다.'
+        }
+      },
+      {
+        id: 'SIT-01-INTER',
+        tag: 'INTER',
+        text: {
+          pt: 'Mediar o diálogo entre as pessoas da equipe, alinhar expectativas e manter a motivação alta.',
+          en: 'Mediate dialogue among team members, align expectations, and boost morale.',
+          ko: '팀원 간의 대화를 중재하고 기대치를 맞추며 사기를 북돋웁니다.'
+        }
+      },
+      {
+        id: 'SIT-01-INTRA',
+        tag: 'INTRA',
+        text: {
+          pt: 'Fazer uma análise reflexiva individual sobre os riscos e definir sua estratégia antes de opinar.',
+          en: 'Conduct a deep personal reflection on risks and set your individual focus first.',
+          ko: '의견을 내기 전 위험 요소와 개인적 전략을 혼자 깊이 성찰합니다.'
+        }
+      }
+    ]
+  },
+  {
+    id: 'SIT-02',
+    prompt: {
+      pt: 'SITUAÇÃO 2: Um equipamento ou ferramenta digital importante quebrou de repente. Qual é sua reação natural imediata?',
+      en: 'SCENARIO 2: An essential tool or digital device breaks suddenly. What is your immediate natural reaction?',
+      ko: '상황 2: 중요한 장비나 디지털 도구가 갑자기 고장 났습니다. 당신의 즉각적인 반응은 무엇입니까?'
+    },
+    options: [
+      {
+        id: 'SIT-02-LOG',
+        tag: 'LOG',
+        text: {
+          pt: 'Mapear a lógica do defeito testando hipóteses sistemáticas de causa e efeito.',
+          en: 'Map out the fault logic by testing systematic cause-and-effect hypotheses.',
+          ko: '원인과 결과에 대한 가설을 체계적으로 검증하며 고장 논리를 파악합니다.'
+        }
+      },
+      {
+        id: 'SIT-02-LIN',
+        tag: 'LIN',
+        text: {
+          pt: 'Procurar a documentação escrita, fóruns técnicos e o manual de instruções.',
+          en: 'Search for written documentation, technical forums, and instruction manuals.',
+          ko: '서면 매뉴얼, 기술 포럼 및 사용 가이드 문서를 찾아 읽습니다.'
+        }
+      },
+      {
+        id: 'SIT-02-SPA',
+        tag: 'SPA',
+        text: {
+          pt: 'Examina esquemas visuais explodidos ou assiste a um vídeo com diagrama do aparelho.',
+          en: 'Examine visual exploded diagrams or watch a video with a visual blueprint.',
+          ko: '분해 도면이나 구체적인 시각 튜토리얼 영상을 살펴봅니다.'
+        }
+      },
+      {
+        id: 'SIT-02-MUS',
+        tag: 'MUS',
+        text: {
+          pt: 'Escuta com atenção ruidos anômalos, apitos ou alterações no som do aparelho.',
+          en: 'Listen closely for strange sounds, beeps, or pitch changes in the device.',
+          ko: '장비에서 나는 이상 소음, 비프음 또는 음색 변화에 귀를 기울입니다.'
+        }
+      },
+      {
+        id: 'SIT-02-KIN',
+        tag: 'KIN',
+        text: {
+          pt: 'Desmontar ou mexer fisicamente nos cabos e peças para sentir onde está o problema.',
+          en: 'Physically open, reconnect cables, or manipulate parts to feel where it broke.',
+          ko: '케이블과 부품을 직접 손으로 건드리고 조작하며 고장 부위를 찾습니다.'
+        }
+      },
+      {
+        id: 'SIT-02-INTER',
+        tag: 'INTER',
+        text: {
+          pt: 'Chamar um colega experiente para conversarem e resolverem o problema em parceria.',
+          en: 'Call an experienced colleague to talk through and resolve the issue together.',
+          ko: '경험 있는 동료를 불러 함께 대화하며 문제를 해결합니다.'
+        }
+      },
+      {
+        id: 'SIT-02-INTRA',
+        tag: 'INTRA',
+        text: {
+          pt: 'Manter a calma, avaliar o impacto emocional e decidir com autonomia se compensa reparar.',
+          en: 'Stay calm, assess the emotional impact, and independently decide if repair is worth it.',
+          ko: '침착함을 유지하고 감정적 영향을 평가한 후 수리 여부를 스스로 결정합니다.'
+        }
+      }
+    ]
+  },
+  {
+    id: 'SIT-03',
+    prompt: {
+      pt: 'SITUAÇÃO 3: Você tem um fim de semana totalmente livre para aprender algo novo do zero. O que você escolhe fazer?',
+      en: 'SCENARIO 3: You have a completely free weekend to learn something brand new. What do you choose to do?',
+      ko: '상황 3: 주말에 완전히 새로운 것을 처음부터 배울 자유 시간이 주어졌습니다. 무엇을 선택하시겠습니까?'
+    },
+    options: [
+      {
+        id: 'SIT-03-LOG',
+        tag: 'LOG',
+        text: {
+          pt: 'Aprender programação, análise de dados ou resolver enigmas matemáticos complexos.',
+          en: 'Learn coding, data analytics, or solve complex mathematical puzzles.',
+          ko: '프로그래밍, 데이터 분석을 배우거나 복잡한 수학 수수께끼를 풉니다.'
+        }
+      },
+      {
+        id: 'SIT-03-LIN',
+        tag: 'LIN',
+        text: {
+          pt: 'Devorar um livro instigante, escrever um ensaio ou estudar um novo idioma.',
+          en: 'Read an engaging book, write an essay, or study a new language.',
+          ko: '흥미로운 책을 읽거나, 에세이를 쓰거나, 외국어 문법을 공부합니다.'
+        }
+      },
+      {
+        id: 'SIT-03-SPA',
+        tag: 'SPA',
+        text: {
+          pt: 'Praticar desenho 3D, edição de fotografia ou modelagem arquitetônica.',
+          en: 'Practice 3D design, photo editing, or architectural modeling.',
+          ko: '3D 스케치, 사진 편집 또는 공간 디자인을 연습합니다.'
+        }
+      },
+      {
+        id: 'SIT-03-MUS',
+        tag: 'MUS',
+        text: {
+          pt: 'Aprender um instrumento musical, compor ritmos ou analisar harmonias sonoras.',
+          en: 'Learn a musical instrument, compose beats, or analyze harmonic structures.',
+          ko: '악기를 연주하거나, 비트를 만들거나, 음향 화성을 분석합니다.'
+        }
+      },
+      {
+        id: 'SIT-03-KIN',
+        tag: 'KIN',
+        text: {
+          pt: 'Praticar um esporte dinâmico, dançar ou construir um móvel com ferramentas.',
+          en: 'Practice a sport, dance, or build furniture with physical tools.',
+          ko: '스포츠, 댄스를 연습하거나 도구로 직접 가구를 조립합니다.'
+        }
+      },
+      {
+        id: 'SIT-03-INTER',
+        tag: 'INTER',
+        text: {
+          pt: 'Organizar um evento social, workshop em grupo ou participar de um debate coletivo.',
+          en: 'Organize a social event, group workshop, or join a community debate.',
+          ko: '모임/워크숍을 주최하거나 소셜 그룹 토론에 참여합니다.'
+        }
+      },
+      {
+        id: 'SIT-03-INTRA',
+        tag: 'INTRA',
+        text: {
+          pt: 'Fazer um retiro de escrita diária, meditação e planejamento de metas pessoais.',
+          en: 'Do a private journal retreat, meditation, and personal goal planning.',
+          ko: '조용히 일기를 쓰고 메타인지 명상과 목표를 계획합니다.'
+        }
+      }
+    ]
+  },
+  {
+    id: 'SIT-04',
+    prompt: {
+      pt: 'SITUAÇÃO 4: Ao ingressar em um curso altamente desafiador, qual material de apoio te traz mais segurança?',
+      en: 'SCENARIO 4: When starting a highly challenging course, which study material gives you the most confidence?',
+      ko: '상황 4: 매우 난이도 높은 과정에 참여할 때, 어떤 학습 자료가 가장 큰 안도감을 줍니까?'
+    },
+    options: [
+      {
+        id: 'SIT-04-LOG',
+        tag: 'LOG',
+        text: {
+          pt: 'Resumos estruturados em equações, provas lógicas e tabelas quantitativas.',
+          en: 'Summaries structured into equations, logical proofs, and quantitative tables.',
+          ko: '수식, 논리적 증명 및 수치 표로 요약된 정리 자료.'
+        }
+      },
+      {
+        id: 'SIT-04-LIN',
+        tag: 'LIN',
+        text: {
+          pt: 'Livros didáticos de referência com texto claro, glossário e capítulos bem escritos.',
+          en: 'Comprehensive reference textbooks with clear prose, glossaries, and structured chapters.',
+          ko: '명확한 설명과 용어집이 갖춰진 완성도 높은 교재.'
+        }
+      },
+      {
+        id: 'SIT-04-SPA',
+        tag: 'SPA',
+        text: {
+          pt: 'Mapas mentais coloridos, infográficos detalhados e diagramas de relação visual.',
+          en: 'Colorful mind maps, detailed infographics, and visual relationship diagrams.',
+          ko: '색상으로 구분된 마인드맵, 인포그래픽 및 관계 도표.'
+        }
+      },
+      {
+        id: 'SIT-04-MUS',
+        tag: 'MUS',
+        text: {
+          pt: 'Audiobooks bem narrados, mnemônicos sonoros e gravações das explicações.',
+          en: 'Well-narrated audiobooks, sonic mnemonics, and recordings of explanations.',
+          ko: '잘 녹음된 오디오북, 억양 리듬 암기법 및 오디오 강의.'
+        }
+      },
+      {
+        id: 'SIT-04-KIN',
+        tag: 'KIN',
+        text: {
+          pt: 'Kits práticos de exercícios, simuladores interativos e laboratórios hands-on.',
+          en: 'Practical exercise kits, interactive simulators, and hands-on labs.',
+          ko: '인터랙티브 시뮬레이터 및 직접 실행해보는 실습 과제.'
+        }
+      },
+      {
+        id: 'SIT-04-INTER',
+        tag: 'INTER',
+        text: {
+          pt: 'Grupos de estudo participativos com trocas frequentes entre os alunos.',
+          en: 'Interactive study groups with active discussion among peers.',
+          ko: '동료들과 활발하게 질문하고 토론할 수 있는 스터디 그룹.'
+        }
+      },
+      {
+        id: 'SIT-04-INTRA',
+        tag: 'INTRA',
+        text: {
+          pt: 'Um guia de autoestudo com métricas de progresso para acompanhar seu ritmo em silêncio.',
+          en: 'A self-study guide with progress metrics to track your independent pace quietly.',
+          ko: '혼자 자신의 성장을 기록하고 점검할 수 있는 자율 학습 가이드.'
+        }
+      }
+    ]
+  },
+  {
+    id: 'SIT-05',
+    prompt: {
+      pt: 'SITUAÇÃO 5: Faltam 10 minutos para você realizar uma apresentação decisiva para um grande público. Como se prepara?',
+      en: 'SCENARIO 5: You have 10 minutes left before giving a key presentation to a large audience. How do you prepare?',
+      ko: '상황 5: 대중 앞에서 중요한 발표를 하기까지 10분이 남았습니다. 당신은 어떻게 준비합니까?'
+    },
+    options: [
+      {
+        id: 'SIT-05-LOG',
+        tag: 'LOG',
+        text: {
+          pt: 'Reviso a ordem lógica dos argumentos e a precisão dos dados estatísticos no slide.',
+          en: 'Review the logical sequence of arguments and accuracy of key statistics.',
+          ko: '발표 논리 순서와 핵심 데이터의 정확성을 차분히 재검토합니다.'
+        }
+      },
+      {
+        id: 'SIT-05-LIN',
+        tag: 'LIN',
+        text: {
+          pt: 'Repasso mentalmente a escolha exata das palavras para a frase de abertura e encerramento.',
+          en: 'Mentally rehearse the precise word choice for the opening and closing remarks.',
+          ko: '도입부와 마무리 문장의 정확한 어휘 선택을 머릿속으로 반추합니다.'
+        }
+      },
+      {
+        id: 'SIT-05-SPA',
+        tag: 'SPA',
+        text: {
+          pt: 'Visualizo mentalmente a disposição do palco, os slides e a reação visual da plateia.',
+          en: 'Mentally visualize the stage setup, slide order, and audience visual layout.',
+          ko: '무대 배치, 슬라이드 순서, 청중의 시각적 배치를 머릿속으로 시뮬레이션합니다.'
+        }
+      },
+      {
+        id: 'SIT-05-MUS',
+        tag: 'MUS',
+        text: {
+          pt: 'Faço aquecimento vocal, regulo o ritmo de respiração e a modulação da voz.',
+          en: 'Do vocal warm-ups, regulate breathing rhythm, and adjust voice modulation.',
+          ko: '발성 워밍업을 하고 호흡 리듬과 음성의 억양/톤을 조율합니다.'
+        }
+      },
+      {
+        id: 'SIT-05-KIN',
+        tag: 'KIN',
+        text: {
+          pt: 'Caminho pelo espaço, gesticulo e ensaio a postura corporal no palco.',
+          en: 'Walk around the venue, stretch, and rehearse body gestures live.',
+          ko: '공간을 거닐며 몸을 풀고 무대에서의 제스처와 신체 포즈를 연습합니다.'
+        }
+      },
+      {
+        id: 'SIT-05-INTER',
+        tag: 'INTER',
+        text: {
+          pt: 'Converso com alguém na primeira fileira para sentir a energia e conectar com as pessoas.',
+          en: 'Talk with someone in the front row to gauge the room energy and connect.',
+          ko: '청중 중 누군가와 먼저 가볍게 대화를 나누며 현장의 에너지를 느낍니다.'
+        }
+      },
+      {
+        id: 'SIT-05-INTRA',
+        tag: 'INTRA',
+        text: {
+          pt: 'Fecho os olhos em silêncio por 2 minutos para focar a mente e dominar as emoções.',
+          en: 'Close my eyes in silence for 2 minutes to center my mind and master my emotions.',
+          ko: '2분간 조용히 눈을 감고 정신을 집중하여 내면의 감정을 다스립니다.'
+        }
+      }
+    ]
   }
 ];
+
 
 export const likertScale = {
   "min": 1,
@@ -2449,17 +3510,23 @@ export const kolbResults: Record<string, ResultProfile> = {
       "pt": [
         "Excelente capacidade imaginativa, empatia e facilidade para enxergar o contexto humano e emocional.",
         "Muito forte em geração de ideias (brainstorming), interpretação de casos e perguntas sobre o 'porquê'.",
-        "Prefere observar e refletir com cuidado antes de se precipitar em tomar uma atitude."
+        "Prefere observar e refletir com cuidado antes de se precipitar em tomar uma atitude.",
+        "Sensível a valores, relações interpessoais e significados culturais/sociais presentes na aprendizagem.",
+        "Aprende com excelência em ambientes abertos e cooperativos que encorajam perspectivas livres e diversificadas."
       ],
       "en": [
         "Strong at context and empathy-based understanding.",
         "Great at ideation and interpreting “why.”",
-        "You prefer reflection before action."
+        "You prefer reflection before action.",
+        "Sensitive to values, interpersonal relations, and cultural context.",
+        "Thrives in open, cooperative environments encouraging diverse perspectives."
       ],
       "ko": [
         "사람/상황의 맥락을 잘 읽고 공감 기반 이해가 강합니다.",
         "아이디어 발상, 사례 해석, “왜?” 질문에 강합니다.",
-        "실행 전 관찰·정리 시간이 있어야 몰입이 됩니다."
+        "실행 전 관찰·정리 시간이 있어야 몰입이 됩니다.",
+        "가치관, 인간관계, 문화적 맥락에 직관적으로 민감합니다.",
+        "다양한 관점을 존중하는 개방적이고 협력적인 환경에서 빛을 발합니다."
       ]
     },
     "study_tips": {
@@ -2518,17 +3585,23 @@ export const kolbResults: Record<string, ResultProfile> = {
       "pt": [
         "Habilidade excepcional para lidar com informações teóricas amplas e organizá-las de modo lógico e estruturado.",
         "Mais interessado em conceitos abstratos, rigor conceitual e lógica do que em pessoas ou aplicações imediatas.",
-        "Gosta de entender o funcionamento profundo dos sistemas e frameworks teóricos."
+        "Gosta de entender o funcionamento profundo dos sistemas e frameworks teóricos.",
+        "Prefere a precisão teórica ao valor prático imediato: uma teoria coerente é mais valiosa do que uma solução improvisada.",
+        "Destaca-se no planejamento sistemático, na síntese de relatórios complexos e na análise quantitativa/qualitativa de dados."
       ],
       "en": [
         "You prioritize structure, principles, and clarity.",
         "You want “why” before “how.”",
-        "Frameworks and conceptual notes are your strength."
+        "Frameworks and conceptual notes are your strength.",
+        "Values theoretical precision over quick makeshift solutions.",
+        "Excels at systematic planning, complex report synthesis, and data analysis."
       ],
       "ko": [
         "정의/원리/구조가 명확할수록 편합니다.",
         "“왜 그런가”를 먼저 알고 싶어합니다.",
-        "프레임워크/정리 노트에서 강점이 큽니다."
+        "프레임워크/정리 노트에서 강점이 큽니다.",
+        "조급한 임시방편보다 일관되고 정교한 이론적 구조를 선호합니다.",
+        "체계적인 계획 수립, 복합 보고서 종합, 데이터 분석에 뛰어납니다."
       ]
     },
     "study_tips": {
@@ -2587,17 +3660,23 @@ export const kolbResults: Record<string, ResultProfile> = {
       "pt": [
         "Focado em encontrar a melhor solução técnica para um problema bem definido.",
         "Raciocínio dedutivo refinado e pragmatismo: prefere lidar com tarefas técnicas e lógicas.",
-        "Gosta de testar ideias para comprovar sua utilidade e eficiência no mundo real."
+        "Gosta de testar ideias para comprovar sua utilidade e eficiência no mundo real.",
+        "Relaciona-se melhor com objetos, ferramentas e sistemas do que com questões puramente interpessoais ou emotivas.",
+        "Decidido e orientado a objetivos: toma decisões rápidas quando há dados lógicos e critérios de sucesso claros."
       ],
       "en": [
         "Strong in real-world application and problem-solving.",
         "Clear goals and criteria increase speed.",
-        "Too much theory without use can feel slow."
+        "Too much theory without use can feel slow.",
+        "Relates best to tasks, systems, and tools rather than open-ended debates.",
+        "Decisive and goal-oriented when logical data and criteria are present."
       ],
       "ko": [
         "실전 적용과 문제 해결에 강합니다.",
         "목표/기준이 뚜렷할수록 속도가 납니다.",
-        "추상적인 얘기만 길면 지루할 수 있습니다."
+        "추상적인 얘기만 길면 지루할 수 있습니다.",
+        "감정적 논쟁보다 시스템, 도구, 기술적 과제에 더 유능합니다.",
+        "명확한 데이터와 목표 기준이 있을 때 결단력이 매우 뛰어납니다."
       ]
     },
     "study_tips": {
@@ -2656,17 +3735,23 @@ export const kolbResults: Record<string, ResultProfile> = {
       "pt": [
         "Aprende fazendo: arrisca-se com facilidade, aprende com tentativa e erro e gosta de desafios dinâmicos.",
         "Confia na intuição e na experiência imediata muito mais do que em teorias abstratas.",
-        "Excelente capacidade de adaptação quando as circunstâncias mudam de repente."
+        "Excelente capacidade de adaptação quando as circunstâncias mudam de repente.",
+        "Lidera a execução de projetos no chão de fábrica ou em campo, atuando como catalisador de ação imediata.",
+        "Busca constantemente novas oportunidades e desafios, sentindo-se confortável em cenários de incerteza."
       ],
       "en": [
         "You prefer “try, then adjust.”",
         "Real situations energize you.",
-        "Fast feedback accelerates your growth."
+        "Fast feedback accelerates your growth.",
+        "Acts as an immediate catalyst in field execution and real-world trials.",
+        "Constantly seeks new opportunities and thrives under changing conditions."
       ],
       "ko": [
         "일단 해보고 조정하는 데 강합니다.",
         "실전/현장에서 에너지가 올라갑니다.",
-        "피드백이 있으면 성장 속도가 더 빨라집니다."
+        "피드백이 있으면 성장 속도가 더 빨라집니다.",
+        "현장 실행과 실제 테스트에서 추진력 있는 촉매 역할을 합니다.",
+        "새로운 기회를 지속적으로 탐색하며 변화와 불확실성에 강합니다."
       ]
     },
     "study_tips": {
@@ -2725,13 +3810,23 @@ export const kolbResults: Record<string, ResultProfile> = {
       "pt": [
         "Capacidade de circular com naturalidade entre sentir, refletir, teorizar e praticar.",
         "Versátil em diferentes ambientes de aprendizado, adaptando sua postura conforme a demanda.",
-        "Equilibra análise teórica com ímpeto de execução prática."
+        "Equilibra análise teórica com ímpeto de execução prática.",
+        "Integra a sensibilidade humana à lógica técnica para tomar decisões ponderadas e acionáveis.",
+        "Ajusta seu ritmo de estudos dependendo do nível de complexidade e do objetivo final da tarefa."
       ],
       "en": [
-        "Alternate both approaches to discover the routine that works best for you."
+        "Moves fluidly through feeling, reflecting, conceptualizing, and testing.",
+        "Highly adaptable across distinct learning environments and challenge types.",
+        "Balances deep theoretical analysis with prompt practical execution.",
+        "Combines human empathy with technical logic for well-rounded decisions.",
+        "Adjusts study pacing based on task complexity and final goals."
       ],
       "ko": [
-        "두 스타일의 장점을 번갈아 적용해보며 나에게 맞는 루틴을 찾는 것이 효과적입니다."
+        "느끼기, 돌아보기, 개념화, 실습 사이를 자연스럽게 순환합니다.",
+        "다양한 학습 환경과 문제 유형에 맞춰 유연하게 적응합니다.",
+        "깊이 있는 이론 분석과 신속한 실전 실행의 균형을 이룹니다.",
+        "인간적 공감과 기술적 논리를 결합하여 다각적 결정을 내립니다.",
+        "과제의 난이도와 최종 목표에 따라 공부 페이스를 효과적으로 조절합니다."
       ]
     },
     "study_tips": {
